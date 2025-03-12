@@ -273,6 +273,8 @@ class ResearchConductor:
                 "query": sub_query,
                 "scraped_data_size": len(scraped_data)
             })
+            print(f"Sub query: {sub_query}")
+            print(f"Scraped data: {scraped_data}")
         
         if self.researcher.verbose:
             await stream_output(

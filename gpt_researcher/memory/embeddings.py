@@ -21,6 +21,7 @@ _SUPPORTED_PROVIDERS = {
     "dashscope",
     "custom",
     "bedrock",
+    "local_openai"
 }
 
 
@@ -28,6 +29,16 @@ class Memory:
     def __init__(self, embedding_provider: str, model: str, **embdding_kwargs: Any):
         _embeddings = None
         match embedding_provider:
+            case "local_openai":
+                from langchain_openai import OpenAIEmbeddings
+
+                _embeddings = OpenAIEmbeddings(
+                    model=model,
+                    openai_api_key=os.getenv("OPENAI_API_KEY", "not-needed"),
+                    openai_api_base=os.getenv("OPENAI_BASE_URL", "http://192.168.7.198:1234/v1"),
+                    **embdding_kwargs,
+                )
+                print(f"Initialized embeddings for {embedding_provider} with model {model}")
             case "custom":
                 from langchain_openai import OpenAIEmbeddings
 
@@ -119,3 +130,7 @@ class Memory:
 
     def get_embeddings(self):
         return self._embeddings
+
+    def embed_query(self, query):
+        print(f"Embedding query: {query}")  # Debug information
+        return self._embeddings.embed_query(query)

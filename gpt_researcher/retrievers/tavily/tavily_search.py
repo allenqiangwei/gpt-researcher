@@ -5,7 +5,11 @@ import os
 from typing import Literal, Sequence, Optional
 import requests
 import json
+import sys
 
+# 添加项目根目录到Python路径
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
+from tavily_api_manager import get_tavily_api_key
 
 class TavilySearch:
     """
@@ -34,21 +38,22 @@ class TavilySearch:
 
     def get_api_key(self):
         """
-        Gets the Tavily API key
+        获取Tavily API密钥
         Returns:
-
+            str: API密钥
         """
+        # 首先尝试从headers获取API密钥
         api_key = self.headers.get("tavily_api_key")
+        
         if not api_key:
-            try:
-                api_key = os.environ["TAVILY_API_KEY"]
-            except KeyError:
-                print(
-                    "Tavily API key not found, set to blank. If you need a retriver, please set the TAVILY_API_KEY environment variable."
-                )
+            # 然后从tavily_api_manager获取API密钥
+            api_key = get_tavily_api_key()
+            
+            if not api_key:
+                print("未找到Tavily API密钥，设置为空。如果需要使用检索功能，请设置TAVILY_API_KEY环境变量或在数据库中添加API密钥。")
                 return ""
+                
         return api_key
-
 
     def _search(
         self,

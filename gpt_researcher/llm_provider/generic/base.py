@@ -21,7 +21,8 @@ _SUPPORTED_PROVIDERS = {
     "xai",
     "deepseek",
     "litellm",
-    "gigachat"
+    "gigachat",
+    "local_openai"
 }
 
 
@@ -37,6 +38,18 @@ class GenericLLMProvider:
             from langchain_openai import ChatOpenAI
 
             llm = ChatOpenAI(**kwargs)
+        elif provider == "local_openai":
+            _check_pkg("langchain_openai")
+            from langchain_openai import ChatOpenAI
+            
+            api_base = os.getenv("OPENAI_API_BASE", "http://192.168.7.198:1234/v1")
+            api_key = os.getenv("OPENAI_API_KEY", "not-needed")
+            
+            llm = ChatOpenAI(
+                openai_api_base=api_base,
+                openai_api_key=api_key,
+                **kwargs
+            )
         elif provider == "anthropic":
             _check_pkg("langchain_anthropic")
             from langchain_anthropic import ChatAnthropic

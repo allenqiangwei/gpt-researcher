@@ -111,16 +111,24 @@ class Config:
         if config_path is None:
             return DEFAULT_CONFIG
 
-        # config_path = os.path.join(cls.CONFIG_DIR, config_path)
-        if not os.path.exists(config_path):
-            if config_path and config_path != "default":
-                print(f"Warning: Configuration not found at '{config_path}'. Using default configuration.")
-                if not config_path.endswith(".json"):
-                    print(f"Do you mean '{config_path}.json'?")
-            return DEFAULT_CONFIG
+        # Try to load from absolute path first
+        if os.path.exists(config_path):
+            with open(config_path, "r") as f:
+                custom_config = json.load(f)
+        else:
+            # Try to load from config directory
+            config_file = config_path
+            if not config_file.endswith(".json"):
+                config_file = f"{config_file}.json"
+            config_path = os.path.join(cls.CONFIG_DIR, config_file)
+            
+            if not os.path.exists(config_path):
+                if config_path and config_path != "default":
+                    print(f"Warning: Configuration not found at '{config_path}'. Using default configuration.")
+                return DEFAULT_CONFIG
 
-        with open(config_path, "r") as f:
-            custom_config = json.load(f)
+            with open(config_path, "r") as f:
+                custom_config = json.load(f)
 
         # Merge with default config to ensure all keys are present
         merged_config = DEFAULT_CONFIG.copy()

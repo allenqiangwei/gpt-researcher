@@ -34,3 +34,7 @@ langgraph==0.2.76
 # uncomment for testing
 # pytest
 # pytest-asyncio
+
+# 确保使用较新版本的OpenAI，它支持base_url参数
+openai>=1.0.0
+langchain-openai>=0.0.1
